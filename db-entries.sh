@@ -26,7 +26,16 @@ get_record_count() {
     echo $(execute_mysql_query "SELECT COUNT(*) FROM $table")
 }
 
+usage() {
+    echo "Usage: $0 -ss for snapshot of database, -e for entries after snapshot, -l for latest"
+}
+
 tables=$(mysql --user="$DB_USER" --password=''"$DB_PASSWORD"'' -h"$DB_HOST" -P"$DB_PORT" -D "$DB_NAME" -e "SHOW TABLES;" | tail -n +2)
+
+if [[ $# -eq 0 ]]; then
+    usage
+    exit 1
+fi
 
 if [[ $1 = "-ss" ]]; then
     exec 4>&1
@@ -80,7 +89,7 @@ elif [[ $1 = "-l" ]]; then
     done
     exit 0
 else
-    echo "Usage: flag -ss for snapshot of database, -e for entries after snapshot, -l for latest"
+    usage
     exit 0;
 fi
 
