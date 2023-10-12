@@ -5,18 +5,12 @@ DB_USER="root"
 DB_PASSWORD="root"
 DB_HOST="127.0.0.1"
 DB_PORT="3306"
-DB_NAME="db"
+DB_NAME="spinview_db"
 
 execute_mysql_query() {
     local query="$1"
 
     MYSQL_PWD="$DB_PASSWORD" mysql -u"$DB_USER" -h"$DB_HOST" -P"$DB_PORT" -D "$DB_NAME" --skip-column-names --batch -e "$query"
-}
-
-print_latest_entry() {
-    local table="$1"
-    echo 
-    echo -e "\e[32m${table^^}:latest:\e[0m"; execute_mysql_query "SELECT * FROM $table ORDER BY created_at DESC"
 }
 
 get_record_count() {
@@ -25,7 +19,7 @@ get_record_count() {
 }
 
 usage() {
-    echo "Usage: $0 -ss for snapshot of database, -e for entries after snapshot, -l for latest"
+    echo "Usage: $0 -ss for snapshot of database, -e for entries after snapshot"
 }
 
 tables=$(MYSQL_PWD="$DB_PASSWORD" mysql --user="$DB_USER" --password=''"$DB_PASSWORD"'' -h"$DB_HOST" -P"$DB_PORT" -D "$DB_NAME" -e "SHOW TABLES;" | tail -n +2)
@@ -78,15 +72,7 @@ elif [[ $1 = "-e" ]]; then
     fi
     done
     exit 0
-elif [[ $1 = "-l" ]]; then
-    echo "Latest entries:"
-
-    for table in $tables; do
-    print_latest_entry "$table"
-    done
-    exit 0
 else
     usage
     exit 0;
 fi
-
