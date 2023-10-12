@@ -9,12 +9,18 @@ DB_NAME="db"
 
 execute_mysql_query() {
     local query="$1"
+
     MYSQL_PWD="$DB_PASSWORD" mysql -u"$DB_USER" -h"$DB_HOST" -P"$DB_PORT" -D "$DB_NAME" --skip-column-names --batch -e "$query"
 }
 
 print_latest_entry() {
     local table="$1"
-    echo -n -e "\e[32m${table^^}:latestID:\e[0m"; execute_mysql_query "SELECT id FROM $table ORDER BY id DESC LIMIT 1;"
+    echo 
+    echo -e "\e[32m${table^^}:\e[0m"; MYSQL_PWD="$DB_PASSWORD" mysql -u"$DB_USER" -h"$DB_HOST" -P"$DB_PORT" -D "$DB_NAME" -e "
+        SELECT * FROM $table
+        ORDER BY id DESC
+        LIMIT 1
+    "
 }
 
 get_record_count() {
@@ -26,7 +32,7 @@ usage() {
     echo "Usage: $0 -ss for snapshot of database, -e for entries after snapshot, -l for latest"
 }
 
-tables=$(mysql --user="$DB_USER" --password=''"$DB_PASSWORD"'' -h"$DB_HOST" -P"$DB_PORT" -D "$DB_NAME" -e "SHOW TABLES;" | tail -n +2)
+tables=$(MYSQL_PWD="$DB_PASSWORD" mysql --user="$DB_USER" --password=''"$DB_PASSWORD"'' -h"$DB_HOST" -P"$DB_PORT" -D "$DB_NAME" -e "SHOW TABLES;" | tail -n +2)
 
 if [[ $# -eq 0 ]]; then
     usage
