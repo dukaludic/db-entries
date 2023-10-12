@@ -16,14 +16,7 @@ execute_mysql_query() {
 print_latest_entry() {
     local table="$1"
     echo 
-    echo -e "\e[32m${table^^}:\e[0m"
-
-    MYSQL_PWD="$DB_PASSWORD" mysql -u"$DB_USER" -h"$DB_HOST" -P"$DB_PORT" -D "$DB_NAME" -e "
-        SELECT * 
-        FROM $table
-        ORDER BY id DESC
-        LIMIT 1;
-    " | tr '\t' ','
+    echo -e "\e[32m${table^^}:latest:\e[0m"; execute_mysql_query "SELECT * FROM $table ORDER BY created_at DESC"
 }
 
 get_record_count() {
