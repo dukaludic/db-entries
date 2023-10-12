@@ -19,11 +19,11 @@ print_latest_entry() {
     echo -e "\e[32m${table^^}:\e[0m"
 
     MYSQL_PWD="$DB_PASSWORD" mysql -u"$DB_USER" -h"$DB_HOST" -P"$DB_PORT" -D "$DB_NAME" -e "
-        SELECT *
+        SELECT * 
         FROM $table
         ORDER BY id DESC
         LIMIT 1;
-    "
+    " | tr '\t' ','
 }
 
 get_record_count() {
