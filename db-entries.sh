@@ -15,12 +15,15 @@ execute_mysql_query() {
 
 print_latest_entry() {
     local table="$1"
-    echo 
-    echo -e "\e[32m${table^^}:\e[0m"; MYSQL_PWD="$DB_PASSWORD" mysql -u"$DB_USER" -h"$DB_HOST" -P"$DB_PORT" -D "$DB_NAME" -e "
-        SELECT * FROM $table
+    echo
+    echo -e "\e[32m${table^^}:\e[0m"
+
+    MYSQL_PWD="$DB_PASSWORD" mysql -u"$DB_USER" -h"$DB_HOST" -P"$DB_PORT" -D "$DB_NAME" --batch <<EOF | column -t -s$'\t'
+        SELECT *
+        FROM $table
         ORDER BY id DESC
-        LIMIT 1
-    "
+        LIMIT 1;
+EOF
 }
 
 get_record_count() {
