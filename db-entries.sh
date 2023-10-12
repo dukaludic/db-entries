@@ -7,20 +7,17 @@ DB_HOST="127.0.0.1"
 DB_PORT="3306"
 DB_NAME="db"
 
-# Function to execute a MySQL query
 execute_mysql_query() {
     local query="$1"
     mysql --user="$DB_USER" --password="$DB_PASSWORD" -h"$DB_HOST" -P"$DB_PORT" -D "$DB_NAME" --skip-column-names --batch -e "$query"
 }
 
-# Function to print a table's latest entry
 print_latest_entry() {
     local table="$1"
     echo -e "\e[32m${table^^}\e[0m"
     execute_mysql_query "SELECT * FROM $table ORDER BY id DESC LIMIT 1;"
 }
 
-# Function to get the count of records in a table
 get_record_count() {
     local table="$1"
     echo $(execute_mysql_query "SELECT COUNT(*) FROM $table")
